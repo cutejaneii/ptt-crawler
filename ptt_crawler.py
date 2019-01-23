@@ -54,7 +54,7 @@ def get_imgur_img(imgur_url):
 
 
 
-def get_ptt_article_model(ptt_url):
+def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
     article_model = ptt_article_model()
     try:
 
@@ -88,7 +88,6 @@ def get_ptt_article_model(ptt_url):
             filtered[i] = re.sub(expr, '', filtered[i])
 
         filtered = [_f for _f in filtered if _f]  # remove empty strings
-        #filtered = [x for x in filtered if article_id not in x]  # remove last line containing the url of the article
         content = ' '.join(filtered)
         content = re.sub(r'(\s)+', ' ', content)
 
@@ -104,36 +103,51 @@ def get_ptt_article_model(ptt_url):
 
         article_model.url=ptt_url
 
-        for x in range(0, len(all_push_contents), 1):
-            if (check_any_remove_words(all_push_contents[x].text.replace(': ',''))==False):
-                response_model = ptt_response_model()
-                response_model.content = all_push_contents[x].text.replace(': ','').encode('utf-8')
-                response_model.push_tag = all_push_tags[x].text.encode('utf-8')
-                response_model.date = all_push_dates[x].text
-                response_model.author = all_push_authors[x].text.encode('utf-8')
-                push_contents.append(response_model)
+        if (is_get_response==True):
 
-        article_model.responses.extend(push_contents)
+            for x in range(0, len(all_push_contents), 1):
+                author=''
+                if (check_any_remove_words(all_push_contents[x].text.replace(': ','').replace(':',''))==False):
+                    if (len(all_push_contents[x].text.replace(': ',''))>0):
+                        author = all_push_authors[x].text.encode('utf-8')
+                        match = [data for data in push_contents if data.author==author]
+                        if (len(match)>0):
+                            for i in range(0, len(push_contents), 1):
+                                if (push_contents[i].author==author):
+                                    push_contents[i].content += all_push_contents[x].text.replace(': ','').replace(':','').encode('utf-8')
+                            pass
+                        else:
+                            response_model = ptt_response_model()
+                            response_model.content = all_push_contents[x].text.replace(': ','').replace(':','').encode('utf-8')
+                            response_model.push_tag = all_push_tags[x].text.encode('utf-8')
+                            response_model.date = all_push_dates[x].text
+                            response_model.author = all_push_authors[x].text.encode('utf-8')
+                            push_contents.append(response_model)
+
+            print('push-contents1: '+str(len(push_contents)))
+            push_contents = [data for data in push_contents if '噓' not in data.push_tag]
+
+            article_model.responses.extend(push_contents)
 
         # handle images
+        if (is_get_img==True):
+            imgs = article_soup.findAll('a', {"rel":"nofollow"})
 
-        imgs = article_soup.findAll('a', {"rel":"nofollow"})
-
-        for img in imgs:
-            if ('.jpg' in img['href']):
-                article_model.image_urls.append(img['href'].encode('utf-8'))
-                article_model.image_count+=1
-            elif ('.png' in img['href']):
-                article_model.image_urls.append(img['href'].encode('utf-8'))
-                article_model.image_count+=1
-            elif ('i.imgur.com' in img['href']):
-                article_model.image_urls.append(img['href'].encode('utf-8'))
-                article_model.image_count+=1
-            elif ('imgur.com' in img['href']):
-                article_model.image_urls.append(get_imgur_img(img['href'].encode('utf-8')).encode('utf-8'))
-                article_model.image_count+=1
-            else:
-                pass
+            for img in imgs:
+                if ('.jpg' in img['href']):
+                    article_model.image_urls.append(img['href'].encode('utf-8'))
+                    article_model.image_count+=1
+                elif ('.png' in img['href']):
+                    article_model.image_urls.append(img['href'].encode('utf-8'))
+                    article_model.image_count+=1
+                elif ('i.imgur.com' in img['href']):
+                    article_model.image_urls.append(img['href'].encode('utf-8'))
+                    article_model.image_count+=1
+                elif ('imgur.com' in img['href']):
+                    article_model.image_urls.append(get_imgur_img(img['href'].encode('utf-8')).encode('utf-8'))
+                    article_model.image_count+=1
+                else:
+                    pass
     except Exception as e:
         print('error：'+str(e))
 
@@ -155,7 +169,7 @@ def crawl_job(keyword, board, previous_day_count, last_aritlce_id):
                     if ('/'+last_aritlce_id.lower() in anchor['href'].lower()):
                         break
                     if (check_any_remove_words(anchor.text)==False):
-                        article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'])
+                        article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'], True, False)
                         article_model.board=board
                         article_model.fromweb='ptt'
                         article_model.article_id = anchor['href'].replace('/bbs/'+board+'/','').replace('.html','')
@@ -185,7 +199,7 @@ def crawl_job_by_pageno(board, pageno):
         for anchor in article_lists:
             if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
                 if (check_any_remove_words(anchor.text)==False):
-                    article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'])
+                    article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'], True, False)
                     article_model.board=board
                     article_model.fromweb='ptt'
                     article_model.article_id = anchor['href'].replace('/bbs/'+board+'/','').replace('.html','')
