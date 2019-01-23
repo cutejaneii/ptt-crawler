@@ -108,7 +108,7 @@ def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
             for x in range(0, len(all_push_contents), 1):
                 author=''
                 if (check_any_remove_words(all_push_contents[x].text.replace(': ','').replace(':',''))==False):
-                    if (len(all_push_contents[x].text.replace(': ',''))>0):
+                    if (len(all_push_contents[x].text.replace(': ','').replace(':',''))>0):
                         author = all_push_authors[x].text.encode('utf-8')
                         match = [data for data in push_contents if data.author==author]
                         if (len(match)>0):
