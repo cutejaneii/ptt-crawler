@@ -3,6 +3,10 @@
 本專案利用[requests](https://github.com/requests/requests)取得ptt文章
 
 ## 使用方法
+1. git clone ptt-crawler
+<pre><code>git clone https://github.com/cutejaneii/ptt-crawler.git</code></pre>
+2. import and enjoy!
+<pre><code>from ptt_crawler import ptt_crawler</code></pre>
 
 ### 取得最新文章
 
