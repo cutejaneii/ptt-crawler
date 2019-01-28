@@ -42,8 +42,3 @@ B</code></pre>
 
 <pre><code>git clone </code></pre>
 
-## Installation
-
-
-
-<pre><code>git clone </code></pre>
