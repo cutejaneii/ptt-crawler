@@ -46,4 +46,4 @@ B</code></pre>
 
 <pre><code>git clone </code></pre>
 
-### 取得所有看板名稱
+### 取得「台灣遊園地TaiwanPlaza」底下所有看板及網址
