@@ -3,7 +3,7 @@
 本專案利用[requests](https://github.com/requests/requests)取得ptt文章
 
 ## 安裝方法
-<pre><code>git clone https://github.com/cutejaneii/ptt-crawler.git</code></pre>
+<pre><code>$ git clone https://github.com/cutejaneii/ptt-crawler.git</code></pre>
 ## 專案說明
 1. 有鑑於PTT版出口成「髒」，新增[remove_words.txt](https://github.com/cutejaneii/ptt-crawler/blob/master/ptt-crawler/remove_words.txt)過濾「標題」及「回文」（文章內容不過濾），
    偶有錯殺之文章，還請見諒，或可自行修改remove_words.txt
@@ -46,3 +46,4 @@ B</code></pre>
 
 <pre><code>git clone </code></pre>
 
+### 取得所有看板名稱
