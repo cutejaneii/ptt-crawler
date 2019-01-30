@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-b', '--board', default='movie', help='ptt board name (default: movie)')
-    parser.add_argument('-a', '--article_id', default='', help='Article id')
+    parser.add_argument('-a', '--article_id', default='**', help='Article id')
     parser.add_argument('-m', '--mode', type=int, default=0, help='Query mode (default:0)  0: The NEWEST articles, 1:Articles from pageno to pageno, 2:Certain page, 3:get articles by KEYWORD ')
     parser.add_argument('-c', '--count', type=int, default=10, help='Article count (default: 10)')
     parser.add_argument('-f', '--from_pageno', type=int, default=1, help='Article count (default: 1)')
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     if (check==True):
         if (args.mode==0):
-            pass
+            ptt_crawl(board=args.board, last_aritlce_id=args.article_id, count=args.count)
         else:
             if (args.mode==1):
                 for x in range(args.from_pageno, (args.to_pageno+1), 1):
