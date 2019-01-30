@@ -34,12 +34,12 @@ if __name__ == '__main__':
 
     if (check==True):
         if (args.mode==0):
-            ptt_crawl(board=args.board, last_aritlce_id=args.article_id, count=args.count)
+            newest_article_id, data = ptt_crawl(board=args.board, last_aritlce_id=args.article_id, count=args.count)
         else:
             if (args.mode==1):
                 for x in range(args.from_pageno, (args.to_pageno+1), 1):
                     print('<------------------ Crawling data, pageno='+str(x) + '------------------>')
-                    newest_article_id, results = ptt_crawl_by_pageno(board=args.board,pageno=args.from_pageno)
+                    newest_article_id, data = ptt_crawl_by_pageno(board=args.board,pageno=args.from_pageno)
             elif (args.mode==2):
                 newest_article_id, data = ptt_crawl_by_pageno(board=args.board,pageno=args.from_pageno)
             else:
@@ -47,3 +47,4 @@ if __name__ == '__main__':
 
         for article in data:
             print(article.title)
+
