@@ -167,22 +167,22 @@ def ptt_crawl_by_keyword(keyword, board, count):
 def ptt_crawl(board, last_aritlce_id, count):
     newest_article_id=''
     my_result=[]
-    isStop=False
+    isCrawl=True
     previous_day_count=0
     try:
         pageno= get_latest_page_no(board)
-        while (isStop==False):
+        while (isCrawl==True):
             ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/index'+ str(pageno) +'.html')
 
             article_lists = ptt_soup.findAll("a")
 
             for anchor in article_lists:
                 if (len(my_result)==count):
-                    isStop=True
+                    isCrawl=False
                     break
                 if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
                     if ('/'+last_aritlce_id.lower() in anchor['href'].lower()):
-                        isStop=True
+                        isCrawl=False
                         break
                     if (check_any_remove_words(anchor.text)==False):
                         article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'], True, False)
