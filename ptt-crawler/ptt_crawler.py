@@ -124,7 +124,6 @@ def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
                             response_model.author = all_push_authors[x].text.encode('utf-8')
                             push_contents.append(response_model)
 
-            print('push-contents1: '+str(len(push_contents)))
             push_contents = [data for data in push_contents if '噓' not in data.push_tag]
 
             article_model.responses.extend(push_contents)
@@ -153,20 +152,37 @@ def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
 
     return article_model
 
-
-def crawl_job(keyword, board, previous_day_count, last_aritlce_id):
+def ptt_crawl_by_keyword(keyword, board, count):
     newest_article_id=''
     my_result=[]
     try:
-        if (keyword==''):
-            pageno= 10 #get_latest_page_no(board)
+        pass
+
+    except Exception as ee:
+        print(str(ee))
+    return newest_article_id, my_result
+
+
+
+def ptt_crawl(board, last_aritlce_id, count):
+    newest_article_id=''
+    my_result=[]
+    isStop=False
+    previous_day_count=0
+    try:
+        pageno= get_latest_page_no(board)
+        while (isStop==False):
             ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/index'+ str(pageno) +'.html')
 
             article_lists = ptt_soup.findAll("a")
 
             for anchor in article_lists:
+                if (len(my_result)==count):
+                    isStop=True
+                    break
                 if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
                     if ('/'+last_aritlce_id.lower() in anchor['href'].lower()):
+                        isStop=True
                         break
                     if (check_any_remove_words(anchor.text)==False):
                         article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'], True, False)
@@ -210,19 +226,10 @@ def crawl_job_by_pageno(board, pageno):
     return newest_article_id, my_result
 
 
-
-def ptt_crawl(board, keyword, previous_day_count, last_aritlce_id):
-    results=[]
-    newest_article_id=''
-
-    newest_article_id, results = crawl_job(keyword = keyword, board = board, previous_day_count=previous_day_count, last_aritlce_id = last_aritlce_id)
-
-    return newest_article_id, results
-
 def ptt_crawl_by_pageno(board, pageno):
     results=[]
     newest_article_id=''
 
-    newest_article_id, results = crawl_job_by_pageno(board = board, pageno=pageno)
+    newest_article_id, results = ptt_crawl_by_pageno(board = board, pageno=pageno)
 
     return newest_article_id, results
