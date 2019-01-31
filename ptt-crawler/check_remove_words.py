@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 remove_words=[]
-text_file = open('/app/app2/remove_words.txt', 'r')
+text_file = open('remove_words.txt', 'r')
 line = text_file.readline()
 
 remove_words.append(line.decode('utf-8'))
