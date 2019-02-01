@@ -28,15 +28,11 @@
 
 ### 取得最新文章
 
-取得最新的文章(上限為100筆)，不設定條件。
+取得「棒球版」最新文章(預設10筆)
+<pre><code>$ python3 main.py -b Baseball -c 100</code></pre>
 
-<pre><code>from ptt_crawler import ptt_crawler
-A
-B</code></pre>
-
-<pre><code>from ptt_crawler import ptt_crawler
-A
-B</code></pre>
+取得「日本旅遊版」最新5筆文章及回覆
+<pre><code>$ python3 main.py -b Japan_Travel -c 5 -r 1</code></pre>
 
 
 取得最新文章(上限為100筆)，並停止條件為「某篇文章」，當取到該篇文章時，爬蟲停止。
