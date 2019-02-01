@@ -17,7 +17,7 @@
 | 參數 | 縮寫 | 預設值 | 說明 | 
 | ------ | ------ | ------ | ------ |
 | board| -b | movie | 看板名稱 |
-| mode | -m | 0 | 爬蟲模式<br> 0：爬最新文章<br>1：爬「某頁」到「某頁」的文章<br>2：爬「某一頁」的文章<br>3：爬「幾」天內的文章<br>4：依關鍵字爬文章 |
+| mode | -m | 0 | 爬蟲模式<br> 0：爬最新文章<br>1：爬「某頁」到「某頁」的文章<br>2：爬「某一頁」的文章<br>3：依關鍵字爬文章 |
 | from_pageno | -f | 1 | 開始頁數 |
 | to_pageno | -t | 1 | 結束頁數 |
 | article_id | -a | 1 | 文章ID |
@@ -56,9 +56,6 @@
 取得「信用卡版」頁數「1500」的文章
 <pre><code>$ python3 main.py -b creditcard -f 1500 -m 2</code></pre>
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_2A.png)
-
-### 利用「幾天」內的文章
-
 
 ### 利用「關鍵字」取得文章
 
