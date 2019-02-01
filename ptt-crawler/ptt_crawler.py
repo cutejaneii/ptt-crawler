@@ -171,14 +171,33 @@ def get_ptt_article_model(serial, ptt_url, is_get_response, is_get_img):
     return article_model
 
 def ptt_crawl_by_keyword(keyword, board, count):
-    newest_article_id=''
-    my_result=[]
+    result=[]
+    article_hrefs=[]
+    serials=[]
+    queue_count=10
     try:
+        last_pageno=5
+        i=0
+        p=1
+        for x in range(1, (last_pageno+1), 1):
+            print('crawl pageno=' + str(x) + '-> https://www.ptt.cc/bbs/'+ board +'/search?page='+ str(x) +'&q='+keyword)
+            ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/search?page='+ str(x) +'&q='+keyword)
+
+            article_lists = ptt_soup.select('div[class="title"] a')
+
+            for anchor in article_lists:
+                print(anchor['href'])
+                if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
+                    if (check_any_remove_words(anchor.text)==False):
+                        i+=1
+                        article_hrefs.append('https://www.ptt.cc' + anchor['href'])
+                        serials.append(i)
+
         pass
 
     except Exception as ee:
         print(str(ee))
-    return newest_article_id, my_result
+    return result
 
 
 def ptt_crawl(board, last_aritlce_id, is_get_responses, count):
@@ -210,36 +229,6 @@ def ptt_crawl(board, last_aritlce_id, is_get_responses, count):
     except Exception as ee:
         print(str(ee))
     return result
-
-
-def ptt_crawl_by_days(board, previous_day_count, is_get_responses):
-    result=[]
-    isCrawl=True
-    try:
-        pageno= get_latest_page_no(board)
-        while (isCrawl==True):
-            ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/index'+ str(pageno) +'.html')
-            article_lists = ptt_soup.select('div[class="title"] a')
-            pageno-=1
-            i=0
-            for anchor in article_lists:
-                if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
-                    if (check_any_remove_words(anchor.text)==False):
-                        i+=1
-                        article_model = get_ptt_article_model(i, 'https://www.ptt.cc' + anchor['href'], is_get_responses, 0)
-                        article_model.board=board
-                        article_model.fromweb='ptt'
-                        article_model.article_id = anchor['href'].replace('/bbs/'+board+'/','').replace('.html','')
-                        check_date = in_days(article_model.date, previous_day_count)
-                        if (check_date==True):
-                            result.append(article_model)
-                        else:
-                            isCrawl=False
-                            break
-    except Exception as ee:
-        print(str(ee))
-    return result
-
 
 
 def crawl_by_single_page(board, pageno, is_get_responses):
