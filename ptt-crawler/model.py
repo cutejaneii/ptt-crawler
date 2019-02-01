@@ -12,6 +12,7 @@ class ptt_article_model:
         self.responses=[]
         self.author=''
         self.image_count=0
+        self.serial=0
 
 class ptt_response_model:
     def __init__(self):
