@@ -3,10 +3,16 @@ from bs4 import BeautifulSoup
 import requests
 import threading
 from model import ptt_article_model, ptt_response_model
-from check_date import check_ptt_date
+from check_date import in_days
 import re
 from six import u
 from check_remove_words import check_any_remove_words
+import threading
+import queue
+import datetime
+
+def get_serial(element):
+    return element.serial
 
 
 '''
@@ -14,7 +20,7 @@ Get ptt soup
 '''
 def get_ptt_soup(crawl_url):
     cookies = {'over18':'1'}
-    response = requests.get(crawl_url, cookies=cookies)
+    response = requests.get(crawl_url)#, cookies=cookies)
     soup = BeautifulSoup(response.text, "html.parser")
     return soup
 
@@ -30,8 +36,9 @@ def get_latest_page_no(board):
     for anchor in data:
         if (anchor['href'] !=''):
             if (anchor['href'] not in remove_href):
-                page_no = anchor['href'].encode('utf-8').replace('/bbs/'+ board +'/index','').replace('.html','')
-    return page_no
+                page_no = anchor['href'].replace('/bbs/'+ board +'/index','').replace('.html','')
+    return int(page_no)+1
+
 
 def get_imgur_img(imgur_url):
     photo_url=''
@@ -40,10 +47,10 @@ def get_imgur_img(imgur_url):
         imgs = imgur_soup.findAll("link", {"rel":"image_src"})
         for img in imgs:
             if ('.jpg' in img['href']):
-                photo_url=img['href'].encode('utf-8')
+                photo_url=img['href']
                 break
             elif ('.png' in img['href']):
-                photo_url=img['href'].encode('utf-8')
+                photo_url=img['href']
                 break
             else:
                 pass
@@ -53,8 +60,18 @@ def get_imgur_img(imgur_url):
     return photo_url
 
 
+def to_model_job(serials, ptt_urls, is_get_response, is_get_img, q):
+    model = []
+    try:
+        for x in range(0, len(ptt_urls), 1):
+            model.append(get_ptt_article_model(serials[x], ptt_urls[x],  is_get_response, 0))
+    except Exception as ex:
+        print(ex)
+    q.put(model) #return results
+    q.task_done()
 
-def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
+
+def get_ptt_article_model(serial, ptt_url, is_get_response, is_get_img):
     article_model = ptt_article_model()
     try:
 
@@ -64,6 +81,7 @@ def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
         metas = article_soup.select('div.article-metaline')
 
         article_model.image_url=''
+        article_model.serial=serial
 
         main_content = article_soup.find('div', {'id':'main-content'})
 
@@ -103,25 +121,25 @@ def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
 
         article_model.url=ptt_url
 
-        if (is_get_response==True):
+        if (is_get_response==1):
 
             for x in range(0, len(all_push_contents), 1):
                 author=''
                 if (check_any_remove_words(all_push_contents[x].text.replace(': ','').replace(':',''))==False):
                     if (len(all_push_contents[x].text.replace(': ','').replace(':',''))>0):
-                        author = all_push_authors[x].text.encode('utf-8')
+                        author = all_push_authors[x].text
                         match = [data for data in push_contents if data.author==author]
                         if (len(match)>0):
                             for i in range(0, len(push_contents), 1):
                                 if (push_contents[i].author==author):
-                                    push_contents[i].content += all_push_contents[x].text.replace(': ','').replace(':','').encode('utf-8')
+                                    push_contents[i].content += all_push_contents[x].text.replace(': ','').replace(':','')
                             pass
                         else:
                             response_model = ptt_response_model()
-                            response_model.content = all_push_contents[x].text.replace(': ','').replace(':','').encode('utf-8')
-                            response_model.push_tag = all_push_tags[x].text.encode('utf-8')
+                            response_model.content = all_push_contents[x].text.replace(': ','').replace(':','')
+                            response_model.push_tag = all_push_tags[x].text
                             response_model.date = all_push_dates[x].text
-                            response_model.author = all_push_authors[x].text.encode('utf-8')
+                            response_model.author = all_push_authors[x]
                             push_contents.append(response_model)
 
             push_contents = [data for data in push_contents if '噓' not in data.push_tag]
@@ -129,21 +147,21 @@ def get_ptt_article_model(ptt_url, is_get_response, is_get_img):
             article_model.responses.extend(push_contents)
 
         # handle images
-        if (is_get_img==True):
+        if (is_get_img==1):
             imgs = article_soup.findAll('a', {"rel":"nofollow"})
 
             for img in imgs:
                 if ('.jpg' in img['href']):
-                    article_model.image_urls.append(img['href'].encode('utf-8'))
+                    article_model.image_urls.append(img['href'])
                     article_model.image_count+=1
                 elif ('.png' in img['href']):
-                    article_model.image_urls.append(img['href'].encode('utf-8'))
+                    article_model.image_urls.append(img['href'])
                     article_model.image_count+=1
                 elif ('i.imgur.com' in img['href']):
-                    article_model.image_urls.append(img['href'].encode('utf-8'))
+                    article_model.image_urls.append(img['href'])
                     article_model.image_count+=1
                 elif ('imgur.com' in img['href']):
-                    article_model.image_urls.append(get_imgur_img(img['href'].encode('utf-8')).encode('utf-8'))
+                    article_model.image_urls.append(get_imgur_img(img['href']))
                     article_model.image_count+=1
                 else:
                     pass
@@ -163,21 +181,19 @@ def ptt_crawl_by_keyword(keyword, board, count):
     return newest_article_id, my_result
 
 
-
-def ptt_crawl(board, last_aritlce_id, count):
-    newest_article_id=''
-    my_result=[]
+def ptt_crawl(board, last_aritlce_id, is_get_responses, count):
+    result=[]
     isCrawl=True
-    previous_day_count=0
     try:
         pageno= get_latest_page_no(board)
         while (isCrawl==True):
             ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/index'+ str(pageno) +'.html')
+            article_lists = ptt_soup.select('div[class="title"] a')
+            pageno-=1
 
-            article_lists = ptt_soup.findAll("a")
-
+            i=0
             for anchor in article_lists:
-                if (len(my_result)==count):
+                if (len(result)==count):
                     isCrawl=False
                     break
                 if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
@@ -185,51 +201,123 @@ def ptt_crawl(board, last_aritlce_id, count):
                         isCrawl=False
                         break
                     if (check_any_remove_words(anchor.text)==False):
-                        article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'], True, False)
+                        i+=1
+                        article_model = get_ptt_article_model(i, 'https://www.ptt.cc' + anchor['href'], is_get_responses, 0)
                         article_model.board=board
                         article_model.fromweb='ptt'
                         article_model.article_id = anchor['href'].replace('/bbs/'+board+'/','').replace('.html','')
-                        if (newest_article_id==''):
-                            newest_article_id = article_model.article_id
-
-                        if (previous_day_count>0):
-                            is_add = check_ptt_date(article_model.date, previous_day_count)
-                            if (is_add == True):
-                                my_result.append(article_model)
-                        else:
-                            my_result.append(article_model)
-
+                        result.append(article_model)
     except Exception as ee:
         print(str(ee))
-    return newest_article_id, my_result
+    return result
 
 
-def crawl_job_by_pageno(board, pageno):
-    newest_article_id=''
+def ptt_crawl_by_days(board, previous_day_count, is_get_responses):
+    result=[]
+    isCrawl=True
+    try:
+        pageno= get_latest_page_no(board)
+        while (isCrawl==True):
+            ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/index'+ str(pageno) +'.html')
+            article_lists = ptt_soup.select('div[class="title"] a')
+            pageno-=1
+            i=0
+            for anchor in article_lists:
+                if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
+                    if (check_any_remove_words(anchor.text)==False):
+                        i+=1
+                        article_model = get_ptt_article_model(i, 'https://www.ptt.cc' + anchor['href'], is_get_responses, 0)
+                        article_model.board=board
+                        article_model.fromweb='ptt'
+                        article_model.article_id = anchor['href'].replace('/bbs/'+board+'/','').replace('.html','')
+                        check_date = in_days(article_model.date, previous_day_count)
+                        if (check_date==True):
+                            result.append(article_model)
+                        else:
+                            isCrawl=False
+                            break
+    except Exception as ee:
+        print(str(ee))
+    return result
+
+
+
+def crawl_by_single_page(board, pageno, is_get_responses):
     my_result=[]
     try:
+        print('https://www.ptt.cc/bbs/'+ board +'/index'+ str(pageno) +'.html')
         ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/index'+ str(pageno) +'.html')
 
-        article_lists = ptt_soup.findAll("a")
-
+        article_lists = ptt_soup.select('div[class="title"] a')
+        i = 0
         for anchor in article_lists:
             if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
                 if (check_any_remove_words(anchor.text)==False):
-                    article_model = get_ptt_article_model('https://www.ptt.cc' + anchor['href'], True, False)
+                    i+=1
+                    article_model = get_ptt_article_model(i, 'https://www.ptt.cc' + anchor['href'], is_get_responses, 0)
                     article_model.board=board
+                    article_model.serial=i
                     article_model.fromweb='ptt'
                     article_model.article_id = anchor['href'].replace('/bbs/'+board+'/','').replace('.html','')
                     my_result.append(article_model)
 
     except Exception as ee:
         print(str(ee))
-    return newest_article_id, my_result
+    return my_result
 
 
-def ptt_crawl_by_pageno(board, pageno):
-    results=[]
-    newest_article_id=''
+def crawl_by_pages(board, from_pageno, to_pageno, is_get_responses):
+    ptt_models=[]
+    article_hrefs=[]
+    serials=[]
+    queue_count=10
+    try:
+        i=0
+        for x in range(to_pageno, (from_pageno-1), -1):
+            print('crawl pageno=' + str(x) + '-> https://www.ptt.cc/bbs/'+ board +'/index'+ str(x) +'.html')
+            ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/index'+ str(x) +'.html')
 
-    newest_article_id, results = ptt_crawl_by_pageno(board = board, pageno=pageno)
+            article_lists = ptt_soup.select('div[class="title"] a')
 
-    return newest_article_id, results
+            for anchor in article_lists:
+                if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
+                    if (check_any_remove_words(anchor.text)==False):
+                        i+=1
+                        article_hrefs.append('https://www.ptt.cc' + anchor['href'])
+                        serials.append(i)
+
+        # start to multi-thread crawl job....
+        if (len(article_hrefs) >= queue_count):
+            q = queue.Queue(queue_count)
+            threads=[]
+            each_count = len(article_hrefs)// (queue_count-1)
+
+            for x in range(0, (queue_count-1)):
+                thread = threading.Thread(target=to_model_job, args=(serials[x*each_count:(x+1)*each_count], article_hrefs[x*each_count:(x+1)*each_count], is_get_responses, 0, q),)
+                thread.setDaemon(True)
+                thread.start()
+                threads.append(thread)
+
+            left = len(article_hrefs) - ((queue_count-1)*each_count)
+            if (left > 0):
+                thread = threading.Thread(target=to_model_job, args=(serials[(queue_count-1)*each_count:], article_hrefs[(queue_count-1)*each_count:], is_get_responses, 0, q),)
+                thread.setDaemon(True)
+                thread.start()
+                threads.append(thread)
+
+            for _ in range(len(threads)):
+                q.join()
+
+            for _ in range(len(threads)):
+                ptt_models.extend(q.get()) # 取出 queue 裡面的資料
+
+        else:
+            for x in range(to_pageno, (from_pageno-1), -1):
+                ptt_models.extend(crawl_by_single_page(board, x, is_get_responses))
+
+        ptt_models.sort(key=get_serial)
+
+
+    except Exception as ee:
+        print(str(ee))
+    return ptt_models
