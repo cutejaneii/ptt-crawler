@@ -20,7 +20,7 @@
 | mode | -m | 0 | 爬蟲模式<br> 0：爬最新文章<br>1：爬「某頁」到「某頁」的文章<br>2：爬「某一頁」的文章<br>3：依關鍵字爬文章 |
 | from_pageno | -f | 1 | 開始頁數 |
 | to_pageno | -t | 1 | 結束頁數 |
-| article_id | -a | 1 | 文章ID |
+| article_id | -a | ** | 文章ID |
 | count | -c | 10 | 抓取的文章數量，上限100筆 |
 | get_responses | -r | 0 | 是否要取得回覆，0代表不取，1代表取 |
 | keyword | -k | KFC | 關鍵字 |
