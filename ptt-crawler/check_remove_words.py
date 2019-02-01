@@ -4,10 +4,10 @@ remove_words=[]
 text_file = open('remove_words.txt', 'r')
 line = text_file.readline()
 
-remove_words.append(line.decode('utf-8'))
+remove_words.append(line)
 while line:
     line = text_file.readline()
-    remove_words.append(line.rstrip().decode('utf-8'))
+    remove_words.append(line.rstrip())
 
 def check_any_remove_words(sentence):
     check=False
