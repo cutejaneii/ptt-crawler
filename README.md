@@ -36,17 +36,11 @@
 <pre><code>$ python3 main.py -b Japan_Travel -c 5 -r 1</code></pre>
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_0B.png)
 
-
-取得最新文章(上限為100筆)，並停止條件為「某篇文章」，當取到該篇文章時，爬蟲停止。
-若爬到100篇仍未取到該文章，則爬蟲停止。
+取得最新文章(上限為30筆)，並停止條件為「文章ID=M.1549003732.A.F78」，當取到該篇文章時，爬蟲停止。
+若爬到300篇仍未取到該文章，則爬蟲停止。
 注意：並不會將該篇文章爬回，只會爬到該文章的前一筆。
-
-<pre><code>from ptt_crawler import ptt_crawler
-A
-B</code></pre>
-
-
-<pre><code>git clone </code></pre>
+<pre><code>$ python3 main.py -b Japan_Travel -c 30 -a M.1549003732.A.F78</code></pre>
+![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_0C.png)
 
 ### 取得「某頁數」到「某頁數」的文章
 取得「棒球版」頁數「9130」~頁數「9150」的文章
