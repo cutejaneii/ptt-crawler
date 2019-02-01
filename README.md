@@ -54,6 +54,11 @@ B</code></pre>
 取得「棒球版」頁數「9130」~頁數「9150」的文章
 <pre><code>$ python3 main.py -b Baseball -m 1 -f 9130 -t 9150</code></pre>
 
+取得「信用卡球版」頁數「2951」~頁數「2952」的文章及回覆
+<pre><code>$ python3 main.py -b creditcard -f 2951 -t 2952 -m 1 -r 1</code></pre>
+
+
+
 ### 取「某一頁」的文章
 
 <pre><code>git clone </code></pre>
