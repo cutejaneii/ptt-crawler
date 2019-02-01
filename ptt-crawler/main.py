@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from model import ptt_article_model
-from ptt_crawler import ptt_crawl, ptt_crawl_by_pageno
+from ptt_crawler import ptt_crawl, crawl_by_single_page, crawl_by_pages, ptt_crawl_by_days
 from argparse import ArgumentParser
+import datetime
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -14,9 +15,8 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--get_responses', type=int, default=0, help='Get response (default:0)  0:No responses, 1:With response')
     parser.add_argument('-k', '--keyword', default='pizza', help='Keyword')
     args = parser.parse_args()
-    
+
     data = []
-    newest_article_id=''
     check=True
 
     if (args.mode not in [0, 1, 2, 3]):
@@ -27,24 +27,27 @@ if __name__ == '__main__':
         print('[get_responses] can only be 0, 1.')
         check=False
 
-
     if (args.count == 0):
         print('[count] should bigger than 0.')
         check=False
 
+    s = str(datetime.datetime.now())
+
     if (check==True):
         if (args.mode==0):
-            newest_article_id, data = ptt_crawl(board=args.board, last_aritlce_id=args.article_id, count=args.count)
+            data = ptt_crawl(board=args.board, last_aritlce_id=args.article_id, is_get_responses = args.get_responses, count=args.count)
         else:
             if (args.mode==1):
-                for x in range(args.from_pageno, (args.to_pageno+1), 1):
-                    print('<------------------ Crawling data, pageno='+str(x) + '------------------>')
-                    newest_article_id, data = ptt_crawl_by_pageno(board=args.board,pageno=args.from_pageno)
+                data = crawl_by_pages(board=args.board,from_pageno=args.from_pageno, to_pageno=args.to_pageno,is_get_responses = args.get_responses)
             elif (args.mode==2):
-                newest_article_id, data = ptt_crawl_by_pageno(board=args.board,pageno=args.from_pageno)
-            else:
-                pass
+                data = crawl_by_single_page(board=args.board,pageno=args.from_pageno, is_get_responses = args.get_responses)
+            else
+                data = ptt_crawl_by_days(board=args.board, previous_day_count = args.days, is_get_responses = args.get_responses)
+
+        #print('start='+s)
+        #print('end='+str(datetime.datetime.now()))
 
         for article in data:
             print(article.title)
-
+            for i in article.responses:
+                print('  ' + i.push_tag + i.content)
