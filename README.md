@@ -47,14 +47,18 @@
 <pre><code>$ python3 main.py -b Baseball -m 1 -f 9130 -t 9150</code></pre>
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_1A.png)
 
-取得「信用卡球版」頁數「2951」~頁數「2952」的文章及回覆
+取得「信用卡版」頁數「2951」~頁數「2952」的文章及回覆
 <pre><code>$ python3 main.py -b creditcard -f 2951 -t 2952 -m 1 -r 1</code></pre>
 
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_1B.png)
 
 ### 取「某一頁」的文章
+取得「信用卡版」頁數「1500」的文章
+<pre><code>$ python3 main.py -b creditcard -f 1500 -m 2</code></pre>
+![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_2A.png)
 
-<pre><code>git clone </code></pre>
+### 利用「幾天」內的文章
+
 
 ### 利用「關鍵字」取得文章
 
