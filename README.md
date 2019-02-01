@@ -4,8 +4,7 @@
 
 ## 說明
 1. 爬文數量 >= 10，啟用multi-thread (Queue數量=10) 
-2. 新增[remove_words.txt](https://github.com/cutejaneii/ptt-crawler/blob/master/ptt-crawler/remove_words.txt)過濾「標題」及「回文」（文章內容不過濾），例如「三小」
-   偶有錯殺之文章，還請見諒，或可自行修改remove_words.txt
+2. 新增[remove_words.txt](https://github.com/cutejaneii/ptt-crawler/blob/master/ptt-crawler/remove_words.txt)過濾「標題」及「回文」（文章內容不過濾），例如「三小」。偶有錯殺之文章，還請見諒，或可自行修改remove_words.txt
 
 
 ## 安裝方法
