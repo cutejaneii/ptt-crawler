@@ -28,8 +28,8 @@
 
 ### 取得最新文章
 
-取得「棒球版」最新文章(預設10筆)
-<pre><code>$ python3 main.py -b Baseball -c 100</code></pre>
+取得「棒球版」最新10筆文章
+<pre><code>$ python3 main.py -b Baseball</code></pre>
 
 取得「日本旅遊版」最新5筆文章及回覆
 <pre><code>$ python3 main.py -b Japan_Travel -c 5 -r 1</code></pre>
