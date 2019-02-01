@@ -49,8 +49,8 @@ B</code></pre>
 <pre><code>git clone </code></pre>
 
 ### 取得「某頁數」到「某頁數」的文章
-
-<pre><code>git clone </code></pre>
+取得「棒球版」頁數「9130」~頁數「9150」的文章
+<pre><code>$ python3 main.py -b baseball -m 1 -f 9130 -t 9150</code></pre>
 
 ### 取「某一頁」的文章
 
@@ -59,6 +59,14 @@ B</code></pre>
 ### 利用「關鍵字」取得文章
 
 <pre><code>git clone </code></pre>
+
+
+## 效能
+比較條件1：取得「電影版」頁數「3001」~頁數「3100」的文章及回覆
+<pre><code>$ python3 main.py -f 3001 -t 3100 -m 1 -r 1</code></pre>
+
+ 
+
 
 ### 取得「台灣遊園地TaiwanPlaza」底下所有看板及網址
 https://www.ptt.cc/cls/806
