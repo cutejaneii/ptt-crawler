@@ -30,9 +30,11 @@
 
 取得「棒球版」最新10筆文章
 <pre><code>$ python3 main.py -b Baseball</code></pre>
+![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_0A.png)
 
 取得「日本旅遊版」最新5筆文章及回覆
 <pre><code>$ python3 main.py -b Japan_Travel -c 5 -r 1</code></pre>
+![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_0B.png)
 
 
 取得最新文章(上限為100筆)，並停止條件為「某篇文章」，當取到該篇文章時，爬蟲停止。
