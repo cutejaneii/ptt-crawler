@@ -41,7 +41,7 @@ if __name__ == '__main__':
                 data = crawl_by_pages(board=args.board,from_pageno=args.from_pageno, to_pageno=args.to_pageno,is_get_responses = args.get_responses)
             elif (args.mode==2):
                 data = crawl_by_single_page(board=args.board,pageno=args.from_pageno, is_get_responses = args.get_responses)
-            else
+            else :
                 data = ptt_crawl_by_days(board=args.board, previous_day_count = args.days, is_get_responses = args.get_responses)
 
         #print('start='+s)
