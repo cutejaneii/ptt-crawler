@@ -64,9 +64,10 @@ pip3 install requests<br>
 ### 依「關鍵字」爬文章
 取得「棒球版」關鍵字為「恰恰」的文章，頁數限定在第1~3頁
 <pre><code>$ python3 main.py -m 3 -b Baseball -f 1 -t 3 -k 恰恰</code></pre>
+![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode3A.png)
 
 取得「信用卡版」關鍵字為「台新」的文章及回覆，頁數限定在第5~10頁
-<pre><code>$ python3 main.py -m 3 -b creditcard -f 5 -t 10 -k 台新 -r 1</code></pre>
+![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode3B.png)
 
 ## 效能
 比較條件1：取得「電影版」頁數「3001」~頁數「3030」的文章及回覆
@@ -76,7 +77,3 @@ pip3 install requests<br>
 | ------ | ------ | ------ | ------ |
 | single thread | 2019-02-01 14:50:55.000 | 2019-02-01 14:53:33.208 | 2分38秒 |
 | multi-thread | 2019-02-01 15:03:11.671 | 2019-02-01 15:04:38.429 | 1分26秒 |
-
-
-### 取得「台灣遊園地TaiwanPlaza」底下所有看板及網址
-https://www.ptt.cc/cls/806
