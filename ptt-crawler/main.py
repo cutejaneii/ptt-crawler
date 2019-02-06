@@ -32,9 +32,9 @@ if __name__ == '__main__':
         print('[count] should bigger than 0.')
         check=False
     else:
-        if (args.count>100):
-            print('[count] can only smaller or equals 100.')
-            args.count=100
+        if (args.count>1000):
+            print('[count] can only smaller or equals 1000.')
+            args.count=1000
 
     s = str(datetime.datetime.now())
 
