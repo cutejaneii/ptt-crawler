@@ -62,12 +62,11 @@ pip3 install requests<br>
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_2A.png)
 
 ### 依「關鍵字」爬文章
-取得「棒球版」關鍵字為「」的文章
+取得「棒球版」關鍵字為「恰恰」的文章，頁數限定在第1~3頁
+<pre><code>$ python3 main.py -m 3 -b Baseball -f 1 -t 3 -k 恰恰</code></pre>
 
-
-取得「日本旅遊版」關鍵字為「」的文章，頁數限定在第5~10頁
-
-
+取得「信用卡版」關鍵字為「EGOGO」的文章，頁數限定在第5~10頁
+<pre><code>$ python3 main.py -m 3 -b creditcard -f 5 -t 10 -k EGOGO</code></pre>
 
 ## 效能
 比較條件1：取得「電影版」頁數「3001」~頁數「3030」的文章及回覆
