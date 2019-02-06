@@ -26,10 +26,9 @@ pip3 install requests<br>
 | from_pageno | -f | 1 | 開始頁數 |
 | to_pageno | -t | 1 | 結束頁數 |
 | article_id | -a | ** | 文章ID |
-| count | -c | 10 | 抓取的文章數量，上限100筆 |
+| count | -c | 10 | 抓取的文章數量，上限1000筆 |
 | get_responses | -r | 0 | 是否要取得回覆，0代表不取，1代表取 |
 | keyword | -k | Thor | 關鍵字 |
-| days | -d | 1 | 天數 |
 
 ### 取得最新文章
 
