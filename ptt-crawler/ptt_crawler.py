@@ -14,13 +14,12 @@ import datetime
 def get_serial(element):
     return element.serial
 
-
 '''
 Get ptt soup
 '''
 def get_ptt_soup(crawl_url):
     cookies = {'over18':'1'}
-    response = requests.get(crawl_url)#, cookies=cookies)
+    response = requests.get(crawl_url, cookies=cookies)
     soup = BeautifulSoup(response.text, "html.parser")
     return soup
 
@@ -82,9 +81,8 @@ def get_ptt_article_model(serial, ptt_url, is_get_response, is_get_img):
 
         article_model.image_url=''
         article_model.serial=serial
-
+        article_model.article_id = ptt_url.replace('https://www.ptt.cc/bbs/','').replace('.html','').split('/')[1]
         main_content = article_soup.find('div', {'id':'main-content'})
-
 
         all_push_contents = article_soup.findAll('span', {'class':'push-content'})
         all_push_tags = article_soup.findAll('span', {'class':'push-tag'})
@@ -259,7 +257,7 @@ def crawl_by_pages(board, from_pageno, to_pageno, is_get_responses):
     ptt_models=[]
     article_hrefs=[]
     serials=[]
-    queue_count=10
+    queue_count=100
     try:
         i=0
         for x in range(to_pageno, (from_pageno-1), -1):
@@ -298,15 +296,14 @@ def crawl_by_pages(board, from_pageno, to_pageno, is_get_responses):
                 q.join()
 
             for _ in range(len(threads)):
-                ptt_models.extend(q.get()) # 取出 queue 裡面的資料
+                queue_data = q.get()
+                ptt_models.extend(queue_data) # 取出 queue 裡面的資料
 
         else:
             for x in range(to_pageno, (from_pageno-1), -1):
                 ptt_models.extend(crawl_by_single_page(board, x, is_get_responses))
 
-        ptt_models.sort(key=get_serial)
-
-
+        #ptt_models.sort(key=get_serial)
     except Exception as ee:
         print(str(ee))
     return ptt_models
