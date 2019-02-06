@@ -65,8 +65,8 @@ pip3 install requests<br>
 取得「棒球版」關鍵字為「恰恰」的文章，頁數限定在第1~3頁
 <pre><code>$ python3 main.py -m 3 -b Baseball -f 1 -t 3 -k 恰恰</code></pre>
 
-取得「信用卡版」關鍵字為「EGOGO」的文章，頁數限定在第5~10頁
-<pre><code>$ python3 main.py -m 3 -b creditcard -f 5 -t 10 -k EGOGO</code></pre>
+取得「信用卡版」關鍵字為「台新」的文章及回覆，頁數限定在第5~10頁
+<pre><code>$ python3 main.py -m 3 -b creditcard -f 5 -t 10 -k 台新 -r 1</code></pre>
 
 ## 效能
 比較條件1：取得「電影版」頁數「3001」~頁數「3030」的文章及回覆
