@@ -67,6 +67,7 @@ pip3 install requests<br>
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode3A.png)
 
 取得「信用卡版」關鍵字為「台新」的文章及回覆，頁數限定在第5~10頁
+<pre><code>$ python3 main.py -m 3 -b creditcard -f 5 -t 10 -k 台新 -r 1</code></pre>
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode3B.png)
 
 ## 效能
