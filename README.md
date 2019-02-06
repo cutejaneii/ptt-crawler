@@ -22,13 +22,13 @@ pip3 install requests<br>
 | 參數 | 縮寫 | 預設值 | 說明 | 
 | ------ | ------ | ------ | ------ |
 | board| -b | movie | 看板名稱 |
-| mode | -m | 0 | 爬蟲模式<br> 0：爬最新文章<br>1：爬「某頁」到「某頁」的文章<br>2：爬「某一頁」的文章 |
+| mode | -m | 0 | 爬蟲模式<br> 0：爬最新文章<br>1：爬「某頁」到「某頁」的文章<br>2：爬「某一頁」的文章<br>3：依關鍵字爬文章 |
 | from_pageno | -f | 1 | 開始頁數 |
 | to_pageno | -t | 1 | 結束頁數 |
 | article_id | -a | ** | 文章ID |
 | count | -c | 10 | 抓取的文章數量，上限100筆 |
 | get_responses | -r | 0 | 是否要取得回覆，0代表不取，1代表取 |
-| keyword | -k | KFC | 關鍵字 |
+| keyword | -k | Thor | 關鍵字 |
 | days | -d | 1 | 天數 |
 
 ### 取得最新文章
@@ -61,6 +61,14 @@ pip3 install requests<br>
 取得「信用卡版」頁數「1500」的文章
 <pre><code>$ python3 main.py -b creditcard -f 1500 -m 2</code></pre>
 ![image](https://github.com/cutejaneii/repo_imgs/blob/master/ptt-crawler/mode_2A.png)
+
+### 依「關鍵字」爬文章
+取得「棒球版」關鍵字為「」的文章
+
+
+取得「日本旅遊版」關鍵字為「」的文章，頁數限定在第5~10頁
+
+
 
 ## 效能
 比較條件1：取得「電影版」頁數「3001」~頁數「3030」的文章及回覆
