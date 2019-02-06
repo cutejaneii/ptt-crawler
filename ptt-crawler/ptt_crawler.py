@@ -168,34 +168,63 @@ def get_ptt_article_model(serial, ptt_url, is_get_response, is_get_img):
 
     return article_model
 
-def ptt_crawl_by_keyword(keyword, board, count):
-    result=[]
+def ptt_crawl_by_keyword(keyword, is_get_responses, board, from_pageno, to_pageno):
+    ptt_models=[]
     article_hrefs=[]
     serials=[]
-    queue_count=10
+    queue_count=100
     try:
-        last_pageno=5
+        is_crawl=True
+        pageno=from_pageno
         i=0
-        p=1
-        for x in range(1, (last_pageno+1), 1):
-            print('crawl pageno=' + str(x) + '-> https://www.ptt.cc/bbs/'+ board +'/search?page='+ str(x) +'&q='+keyword)
+
+        for x in range(pageno, to_pageno+1, 1):
             ptt_soup = get_ptt_soup('https://www.ptt.cc/bbs/'+ board +'/search?page='+ str(x) +'&q='+keyword)
-
             article_lists = ptt_soup.select('div[class="title"] a')
-
-            for anchor in article_lists:
-                print(anchor['href'])
-                if (anchor['href'] is not None and '/bbs/'+ board +'/M.' in anchor['href']):
+            if (len(article_lists)==0):
+                break
+            else:
+                article_lists = ptt_soup.select('div[class="title"] a')
+                for anchor in article_lists:
                     if (check_any_remove_words(anchor.text)==False):
                         i+=1
                         article_hrefs.append('https://www.ptt.cc' + anchor['href'])
                         serials.append(i)
+        
+                # start to multi-thread crawl job....
+        if (len(article_hrefs) >= queue_count):
+            q = queue.Queue(queue_count)
+            threads=[]
+            each_count = len(article_hrefs)// (queue_count-1)
 
-        pass
+            for x in range(0, (queue_count-1)):
+                thread = threading.Thread(target=to_model_job, args=(serials[x*each_count:(x+1)*each_count], article_hrefs[x*each_count:(x+1)*each_count], is_get_responses, 0, q),)
+                thread.setDaemon(True)
+                thread.start()
+                threads.append(thread)
+
+            left = len(article_hrefs) - ((queue_count-1)*each_count)
+            if (left > 0):
+                thread = threading.Thread(target=to_model_job, args=(serials[(queue_count-1)*each_count:], article_hrefs[(queue_count-1)*each_count:], is_get_responses, 0, q),)
+                thread.setDaemon(True)
+                thread.start()
+                threads.append(thread)
+
+            for _ in range(len(threads)):
+                q.join()
+
+            for _ in range(len(threads)):
+                queue_data = q.get()
+                ptt_models.extend(queue_data) # 取出 queue 裡面的資料
+
+        else:
+            for x in range(0, len(article_hrefs), 1):
+                ptt_models.append(get_ptt_article_model(serials[x], article_hrefs[x], is_get_response=is_get_responses, is_get_img=0))
+
 
     except Exception as ee:
         print(str(ee))
-    return result
+    return ptt_models
 
 
 def ptt_crawl(board, last_aritlce_id, is_get_responses, count):
