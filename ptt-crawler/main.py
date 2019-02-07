@@ -53,6 +53,5 @@ if __name__ == '__main__':
             print(article.title)
             for i in article.responses:
                 print('  ' + i.push_tag + i.content)
-        print('from page['+ str(args.from_pageno) + '] to page[' + str(args.to_pageno) +']')
         print('from ' + s)
         print('to ' + str(datetime.datetime.now()))
