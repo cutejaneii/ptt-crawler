@@ -53,5 +53,4 @@ if __name__ == '__main__':
             print(article.title)
             for i in article.responses:
                 print('  ' + i.push_tag + i.content)
-        print('from ' + s)
-        print('to ' + str(datetime.datetime.now()))
+        print('from ' + s + ' to '+ str(datetime.datetime.now()))
