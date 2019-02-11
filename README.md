@@ -1,4 +1,4 @@
-# ptt-crawler （PTT爬蟲）
+# ptt-crawler
 
 本專案利用[requests](https://github.com/requests/requests)取得ptt文章
 
